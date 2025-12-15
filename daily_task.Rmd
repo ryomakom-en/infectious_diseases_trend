@@ -66,11 +66,11 @@ pref_lookup <- tibble::tribble(
 )
 
 disease_lookup <- tibble::tribble(
-  ~category, ~category_en,
-  "インフルエンザ", "Influenza",
+  ~disease, ~disease_en,
+  "インフルエンザ", "Flu",
   "ＲＳウイルス感染症", "RSV",
-  "咽頭結膜熱", "Pharyngoconjunctival fever",
-  "Ａ群溶血性レンサ球菌咽頭炎", "Strep throat (GAS)",
+  "咽頭結膜熱", "Adenovirus infection",
+  "Ａ群溶血性レンサ球菌咽頭炎", "Strep throat",
   "感染性胃腸炎", "Gastroenteritis",
   "水痘", "Chickenpox",
   "手足口病", "Hand-foot-mouth disease",
@@ -78,13 +78,14 @@ disease_lookup <- tibble::tribble(
   "突発性発しん", "Roseola",
   "ヘルパンギーナ", "Herpangina",
   "流行性耳下腺炎", "Mumps",
-  "急性出血性結膜炎", "Acute hemorrhagic conjunctivitis",
-  "流行性角結膜炎", "Epidemic keratoconjunctivitis",
+  "急性出血性結膜炎", "Hemorrhagic conjunctivitis",
+  "流行性角結膜炎", "Viral conjunctivitis",
   "細菌性髄膜炎", "Bacterial meningitis",
-  "無菌性髄膜炎", "Aseptic meningitis",
+  "無菌性髄膜炎", "Viral meningitis",
   "マイコプラズマ肺炎", "Mycoplasma pneumonia",
   "クラミジア肺炎", "Chlamydia pneumonia",
-  "感染性胃腸炎（ロタウイルス）", "Rotavirus gastroenteritis",
+  "感染性胃腸炎（ロタウイルス）", "Rotavirus",
+  "百日咳", "Whooping cough",
   "COVID-19", "COVID-19"
 )
 
@@ -92,7 +93,7 @@ cleaned_diseases <- read_csv("merged_data/merged_data.csv") %>%
   left_join(pref_lookup, by = "pref") %>%
   select(-pref) %>%
   rename(pref=pref_en) %>%
-  left_join(disease_lookup, by = "pref") %>%
+  left_join(disease_lookup, by = "category") %>%
   select(-category) %>%
   rename(category=category_en)
 
@@ -328,5 +329,6 @@ if (length(data_list) > 0) {
 
 
 ```
+
 
 
