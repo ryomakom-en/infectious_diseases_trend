@@ -118,7 +118,7 @@ h1 {
 }
 
 .chart-legend{
-  flex: 0 0 70px;     /* shrinkしない方が変化が見えやすい */
+  flex: 0 0 100px;     /* shrinkしない方が変化が見えやすい */
   max-width: 100px;
   padding-left: 6px;
   padding-right: 4px;
@@ -300,6 +300,7 @@ header p {
   fill-opacity: 0.5;   /* 透明度はお好みで調整 */
   cursor: move;
 }
+
 
 
 
