@@ -116,14 +116,13 @@ h1 {
   flex: 1;
 }
 
-.chart-legend {
-  flex: 0 1 160px;          /* 160を基準に、必要なら縮む */
-  max-width: 200px;         /* 広がりすぎない上限 */
-  padding-left: 8px;
-  padding-right: 6px;
+.chart-legend{
+  flex: 0 1 80px;        /* ← 基準幅を半分に（160→80） */
+  max-width: 100px;      /* ← 上限も半分 */
+  padding-left: 6px;
+  padding-right: 4px;
   box-sizing: border-box;
 }
-
 
 /* SVG */
 .svg-content {
@@ -300,5 +299,6 @@ header p {
   fill-opacity: 0.5;   /* 透明度はお好みで調整 */
   cursor: move;
 }
+
 
 
