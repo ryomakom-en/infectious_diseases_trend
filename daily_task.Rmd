@@ -249,16 +249,29 @@ for (week_label in distinct_weeks) {
         ) %>%
         # 必要な列を整数に変換
         mutate(across(c(m1, d1, m2, d2), as.integer)) %>%
-        # ラベルを作成（条件付きで）
+        mutate(
+          month1_en = month.name[m1],
+          month2_en = month.name[m2]
+          ) %>%
         mutate(
           week_label_clean = ifelse(
             is.na(year_str),
             NA_character_,
-            sprintf("%d月%d日～%d月%d日（%s年）", m1, d1, m2, d2, year_str)
-          )
-        ) %>%
-        # 不要列削除
-        select(-full, -year_str, -m1, -d1, -m2, -d2) %>%
+            ifelse(
+              m1 == m2,
+              sprintf("%s %d–%d, %s",
+                      month1_en, d1, d2, year_str),
+              sprintf("%s %d – %s %d, %s",
+                      month1_en, d1, month2_en, d2, year_str)
+              )
+            )
+          ) %>%
+  # ★ ここで中間列を削除
+  select(
+    -full, -year_str,
+    -m1, -d1, -m2, -d2,
+    -month1_en, -month2_en
+  ) %>%
         filter(str_detect(category, "定当")) %>%
         mutate(category = str_remove(category, "_定当")) %>%
         # 最終的に必要な列順に整形
@@ -328,8 +341,8 @@ if (length(data_list) > 0) {
   message("新規データがありませんでした。")
 }
 
-
 ```
+
 
 
 
