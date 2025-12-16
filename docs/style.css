@@ -191,13 +191,13 @@ h1 {
 /* デフォルト（スマホ含む） */
 .legend {
   text-align: left;
-  font-size: 15px;
+  font-size: 150px;
 }
 
 /* PC以上では少し小さく */
 @media (min-width: 900px) {
   .legend {
-    font-size: 9px;
+    font-size: 90px;
   }
 }
 
@@ -308,13 +308,3 @@ header p {
   fill-opacity: 0.5;   /* 透明度はお好みで調整 */
   cursor: move;
 }
-
-
-
-
-
-
-
-
-
-
