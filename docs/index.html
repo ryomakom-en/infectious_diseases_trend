@@ -393,6 +393,21 @@ function setupResizeRedraw(){
      *   - leftWをカード内実幅から算出してはみ出し防止
      ***********************************************/
     function drawFocusContextChart(category, data) {
+      // =============================
+// Layout constants（必須）
+// =============================
+
+// --- Focus chart ---
+const focusMargin = { top: 10, right: 20, bottom: 26, left: 36 };
+const FOCUS_OUTER_H = 220;
+const focusHeight =
+  FOCUS_OUTER_H - focusMargin.top - focusMargin.bottom;
+
+// --- Context (slider) ---
+const contextMargin = { top: 6, right: 20, bottom: 18, left: 36 };
+const CONTEXT_OUTER_H = 70;
+const contextHeight = 22;
+
       // ===== Focus chart layout constants =====
 const focusMargin = { top: 10, right: 20, bottom: 28, left: 36 };
 
@@ -559,22 +574,23 @@ const svgFocusRoot = leftCharts.append("svg")
           });
       });
 
-      /* --------------------------
-         Context（スライダー）SVG：実寸
-         -------------------------- */
-// コンテキスト（スライダー）
+/* --------------------------
+   Context（スライダー）
+   -------------------------- */
 const sliderWrapper = leftCharts.append("div")
   .attr("class", "slider-wrapper");
+
 sliderWrapper.append("h3").text("Time range");
 
-// 外枠サイズ（leftCharts の実測幅に合わせる）
+// 外枠サイズ（leftCharts 実測ベース）
 const totalCtxW = leftChartsW;
-const totalCtxH = contextHeight + contextMargin.top + contextMargin.bottom;
+const totalCtxH = CONTEXT_OUTER_H;
 
-// 描画領域幅（外枠 − margin）
-const contextWidth = Math.max(1, totalCtxW - contextMargin.left - contextMargin.right);
+// 先に width を確定（重要）
+const contextWidth =
+  Math.max(1, totalCtxW - contextMargin.left - contextMargin.right);
 
-// スケールと軸
+// scale / axis
 const xContext = d3.scaleTime()
   .domain(dataExtent)
   .range([0, contextWidth]);
@@ -583,13 +599,55 @@ const xAxisContext = d3.axisBottom(xContext)
   .ticks(d3.timeYear.every(3))
   .tickFormat(d3.timeFormat("%Y"));
 
-// SVG（1回だけ生成）
+// SVG
 const svgContext = sliderWrapper.append("svg")
   .attr("class", "svg-content")
   .attr("viewBox", `0 0 ${totalCtxW} ${totalCtxH}`)
   .attr("preserveAspectRatio", "xMidYMid meet")
   .append("g")
   .attr("transform", `translate(${contextMargin.left},${contextMargin.top})`);
+
+// Axis
+const ctxAxisG = svgContext.append("g")
+  .attr("class", "axis x-axis")
+  .attr("transform", `translate(0,${contextHeight})`)
+  .call(xAxisContext);
+
+removeOverlappingTicksX(ctxAxisG);
+
+// Brush
+const brush = d3.brushX()
+  .extent([[0, 0], [contextWidth, contextHeight]])
+  .on("brush end", brushed);
+
+const brushG = svgContext.append("g")
+  .attr("class", "brush")
+  .call(brush);
+
+// Handles
+const handleWidth = 30;
+
+brushG.selectAll(".handle")
+  .attr("width", handleWidth)
+  .attr("height", contextHeight)
+  .attr("y", 0)
+  .attr("x", (d, i) =>
+    i === 0 ? -handleWidth / 2 : contextWidth - handleWidth / 2
+  );
+
+// Initial position
+if (savedBrushExtents[category]) {
+  brushG.call(brush.move, [
+    xContext(savedBrushExtents[category][0]),
+    xContext(savedBrushExtents[category][1])
+  ]);
+} else {
+  brushG.call(brush.move, [
+    xContext(initialExtent[0]),
+    xContext(initialExtent[1])
+  ]);
+}
+
 
 
 const ctxAxisG = svgContext.append("g")
@@ -717,6 +775,7 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
 
 
 
