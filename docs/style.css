@@ -109,16 +109,17 @@ h1 {
 
 .chart-wrapper {
   display: flex;
-  gap: 20px;
+  gap: 10px;          /* 20→10（任意） */
 }
 
 .left-charts {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .chart-legend{
-  flex: 0 1 70px;        /* ← 基準幅を半分に（160→80） */
-  max-width: 100px;      /* ← 上限も半分 */
+  flex: 0 0 70px;     /* shrinkしない方が変化が見えやすい */
+  max-width: 100px;
   padding-left: 6px;
   padding-right: 4px;
   box-sizing: border-box;
@@ -299,6 +300,7 @@ header p {
   fill-opacity: 0.5;   /* 透明度はお好みで調整 */
   cursor: move;
 }
+
 
 
 
