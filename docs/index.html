@@ -10,7 +10,7 @@
   <!-- 外部CSS -->
   <link rel="stylesheet" href="style23.css" />
 
-  <!-- d3-simple-slider（あなたのコードに合わせて残す） -->
+  <!-- d3-simple-slider（残す） -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/d3-simple-slider/1.6.3/d3-simple-slider.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-simple-slider/1.6.3/d3-simple-slider.min.js"></script>
 </head>
@@ -47,7 +47,7 @@
 
   <script>
     /***********************************************
-     * 重なり防止用関数（軸ラベル）
+     * 重なり防止（軸ラベル）
      ***********************************************/
     function removeOverlappingTicksX(axisSelection) {
       let lastRight = -Infinity;
@@ -75,7 +75,7 @@
     }
 
     /***********************************************
-     * 軸自動調整用（間隔・フォーマット）
+     * 軸自動調整（間隔・フォーマット）
      ***********************************************/
     function computeTickInterval(domain) {
       const start = domain[0], end = domain[1];
@@ -110,11 +110,10 @@
     }
 
     /***********************************************
-     * グローバル設定・変数
+     * グローバル
      ***********************************************/
     let allData = [];
 
-    // 都道府県表示順（英語）
     const prefectureOrder = [
       "Nationwide","Hokkaido","Aomori","Iwate","Miyagi","Akita","Yamagata","Fukushima",
       "Ibaraki","Tochigi","Gunma","Saitama","Chiba","Tokyo","Kanagawa",
@@ -125,46 +124,23 @@
       "Fukuoka","Saga","Nagasaki","Kumamoto","Oita","Miyazaki","Kagoshima","Okinawa"
     ];
 
-    // disease_lookup と一致（全カテゴリ順）
     const allCategoryOrder = [
-      // まず見たい：社会的インパクトが大きい & 変動も大きい
       "COVID-19","Flu","RSV","Gastroenteritis",
-      // 小児で流行しやすく、ニュースにもなりやすい
       "Hand-foot-mouth disease","Chickenpox","Roseola","Fifth disease","Herpangina","Mumps",
-      // 眼科系（集団感染・学校/職場で話題になりやすい）
       "Viral conjunctivitis","Hemorrhagic conjunctivitis",
-      // 肺炎系（重症化の文脈で見せたい）
       "Mycoplasma pneumonia",
       "Chlamydia pneumonia",
-      // 髄膜炎（頻度は高くないが重いので後半でまとまって提示）
       "Bacterial meningitis","Viral meningitis",
-      // その他（一般の認知が相対的に低いので最後）
       "Adenovirus infection","Strep throat","Rotavirus"
     ];
 
-    // デフォルト表示（指定の5つ）
     const defaultCategories = new Set([
-      "Flu",
-      "RSV",
-      "COVID-19",
-      "Hand-foot-mouth disease",
-      "Gastroenteritis"
+      "Flu","RSV","COVID-19","Hand-foot-mouth disease","Gastroenteritis"
     ]);
-
-    // 現在表示しているカテゴリ
     let selectedCategories = new Set(defaultCategories);
 
-    // ブラシ状態保持
+    // ブラシ状態（Dateで保持するので、リサイズしても復元できる）
     const savedBrushExtents = {};
-
-    // サイズ
-    const focusMargin = { top: 10, right: 40, bottom: 33, left: 100 },
-          focusWidth  = 900 - focusMargin.left - focusMargin.right,
-          focusHeight = 320 - focusMargin.top - focusMargin.bottom;
-
-    const contextMargin = { top: 10, right: 100, bottom: 30, left: 70 },
-          contextWidth  = 900 - contextMargin.left - contextMargin.right,
-          contextHeight = 60 - contextMargin.top - contextMargin.bottom;
 
     const parseDate = d3.timeParse("%Y-%m-%d");
     const color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -174,7 +150,6 @@
 
     let highlightedPref = null;
 
-    // 「全国/東京都」英語でも日本語でも拾う（移行中のズレ対策）
     function isNationwide(p) { return p === "Nationwide" || p === "全国"; }
     function isTokyo(p)      { return p === "Tokyo" || p === "東京都"; }
 
@@ -198,7 +173,6 @@
       });
     }
 
-    // 初期データ読み込み（ここはあなたの現状のファイル名を維持）
     Promise.all([
       loadData("results/data-東京都.csv"),
       loadData("results/data-全国.csv")
@@ -213,6 +187,10 @@
       drawAllCharts(getSelectedDropdownPrefs());
 
       loadAdditionalData();
+
+      // ★ リサイズ時に再描画（ブラシ範囲は savedBrushExtents で復元）
+      setupResizeRedraw();
+
     }).catch(err => {
       console.error("Error loading essential CSV files:", err);
     });
@@ -221,13 +199,15 @@
       loadData("results/data-その他.csv").then(dataOther => {
         allData = allData.concat(dataOther);
         console.log("Additional data loaded. Total records:", allData.length);
+        // 追加データが来たら、現在選択状態で再描画してもOK（重いなら外してもOK）
+        drawAllCharts(getSelectedDropdownPrefs());
       }).catch(err => {
         console.error("Error loading additional CSV file:", err);
       });
     }
 
     /***********************************************
-     * 都道府県ドロップダウン
+     * ドロップダウン
      ***********************************************/
     function initializeDropdown() {
       const dropdownContent = d3.select("#dropdown-content");
@@ -257,8 +237,6 @@
     }
 
     function setDefaultDropdownSelection() {
-      // 英語順リストを使っているので、デフォルトは Nationwide + Tokyo を狙う
-      // （ただしデータ/移行中のズレ対策として全国/東京都も許容）
       d3.selectAll("#dropdown-content .option")
         .filter(function() {
           const p = d3.select(this).attr("data-pref");
@@ -272,11 +250,8 @@
     function updateDropdownBtn() {
       const selected = getSelectedDropdownPrefs();
       const btn = d3.select("#dropdown-btn");
-      if (selected.length === 0) {
-        btn.text("ここから選ぶ");
-      } else {
-        btn.text(selected.join(", "));
-      }
+      if (selected.length === 0) btn.text("ここから選ぶ");
+      else btn.text(selected.join(", "));
     }
 
     function getSelectedDropdownPrefs() {
@@ -324,20 +299,30 @@
     }
 
     /***********************************************
-     * 全カテゴリーのグラフ描画（選択中カテゴリのみ）
+     * リサイズ再描画（デバウンス）
+     ***********************************************/
+    function setupResizeRedraw(){
+      let t = null;
+      window.addEventListener("resize", () => {
+        clearTimeout(t);
+        t = setTimeout(() => {
+          drawAllCharts(getSelectedDropdownPrefs());
+        }, 180);
+      });
+    }
+
+    /***********************************************
+     * 全グラフ描画
      ***********************************************/
     function drawAllCharts(selectedPrefs) {
       d3.select("#chart-container").html("");
       highlightedPref = null;
 
       const filtered = allData.filter(d => selectedPrefs.includes(d.pref));
-
       let catGroups = d3.groups(filtered, d => d.category);
 
-      // ★ここが変更：選択中カテゴリだけに絞る
       catGroups = catGroups.filter(([cat]) => selectedCategories.has(cat));
 
-      // 並び順は allCategoryOrder に従う
       catGroups.sort((a, b) => {
         const indexA = allCategoryOrder.indexOf(a[0]);
         const indexB = allCategoryOrder.indexOf(b[0]);
@@ -345,36 +330,84 @@
       });
 
       catGroups.forEach(([cat, catData]) => {
-        drawFocusContextChart(cat, catData);
+        drawFocusContextChart(cat, catData, selectedPrefs);
       });
     }
 
     /***********************************************
-     * 1カテゴリー分のフォーカス＆コンテキストチャート
+     * 1カテゴリーのチャート（レスポンシブ実寸版）
+     * - viewBoxを使わず、left-charts の実幅を測って width に反映
+     * - フォント(例: 36px)は見た目で固定される
      ***********************************************/
-    function drawFocusContextChart(category, data) {
+    function drawFocusContextChart(category, data, selectedPrefs) {
       data.sort((a, b) => a.date - b.date);
       const dataExtent = d3.extent(data, d => d.date);
-      const yMax = d3.max(data, d => d.value) || 0;
+      const yMaxAll = d3.max(data, d => d.value) || 0;
 
       // 初期表示：最新から過去1年
-      const defaultStart = new Date(
-        (dataExtent[1] || new Date()).getFullYear() - 1,
-        (dataExtent[1] || new Date()).getMonth(),
-        (dataExtent[1] || new Date()).getDate()
-      );
-      const initialExtent = savedBrushExtents[category] || [defaultStart, dataExtent[1] || new Date()];
+      const endDate = dataExtent[1] || new Date();
+      const defaultStart = new Date(endDate.getFullYear() - 1, endDate.getMonth(), endDate.getDate());
+      const initialExtent = savedBrushExtents[category] || [defaultStart, endDate];
 
+      // ---- DOM枠
       const container = d3.select("#chart-container")
         .append("div")
         .attr("class", "chart");
+
       container.append("h2").text(category);
 
-      const wrapper = container.append("div")
-        .attr("class", "chart-wrapper");
-      const leftCharts = wrapper.append("div")
-        .attr("class", "left-charts");
+      const wrapper = container.append("div").attr("class", "chart-wrapper");
+      const leftCharts = wrapper.append("div").attr("class", "left-charts");
 
+      // 凡例（必要なら右に作る）—— 先に作って layout を確定させる
+      const legendContainer = wrapper.append("div").attr("class", "chart-legend");
+
+      if (selectedPrefs.length > 1) {
+        const legend = legendContainer.append("div").attr("class", "legend");
+        const prefGroupsAll = d3.groups(data, d => d.pref);
+        const groupLookup = new Map(prefGroupsAll);
+
+        selectedPrefs.forEach(pref => {
+          if (!groupLookup.has(pref)) return;
+
+          const legendColor =
+            isNationwide(pref) ? "blue" :
+            isTokyo(pref)      ? "red"  :
+            color(pref);
+
+          legend.append("span")
+            .attr("class", "legend-item")
+            .attr("data-pref", pref)
+            .style("color", legendColor)
+            .text(pref)
+            .on("click", () => {
+              highlightedPref = (highlightedPref === pref) ? null : pref;
+              // focus svg は後で作るので、その時点で更新関数は下に定義
+              if (container.node().__updateVisibility) {
+                container.node().__updateVisibility();
+              }
+            });
+        });
+      } else {
+        // 1つしかないなら、凡例カラムを空にして縮めたい場合はここで消してもOK
+        // legendContainer.remove();
+      }
+
+      // ---- leftCharts の実幅（凡例有無の影響を含む）を測る
+      // requestAnimationFrame で layout 完了後に測るのが安全
+      const focusMargin = { top: 10, right: 40, bottom: 33, left: 100 };
+      const focusHeight = 320 - focusMargin.top - focusMargin.bottom;
+
+      const contextMargin = { top: 10, right: 100, bottom: 30, left: 70 };
+      const contextHeight = 60 - contextMargin.top - contextMargin.bottom;
+
+      // leftCharts の幅を使って width を決める（最小幅も守る）
+      const leftW = Math.max(520, leftCharts.node().clientWidth || 900);
+
+      const focusWidth  = Math.max(260, leftW - focusMargin.left - focusMargin.right);
+      const contextWidth = Math.max(260, leftW - contextMargin.left - contextMargin.right);
+
+      // ---- Focus SVG（viewBoxなし、実寸）
       const totalFocusW = focusWidth + focusMargin.left + focusMargin.right;
       const totalFocusH = focusHeight + focusMargin.top + focusMargin.bottom;
 
@@ -386,21 +419,15 @@
       const svgFocus = svgFocusRoot.append("g")
         .attr("transform", `translate(${focusMargin.left},${focusMargin.top})`);
 
-
-      const xFocus = d3.scaleTime()
-        .domain(initialExtent)
-        .range([0, focusWidth]);
-
-      const yFocus = d3.scaleLinear()
-        .domain([0, yMax])
-        .range([focusHeight, 0]);
+      const xFocus = d3.scaleTime().domain(initialExtent).range([0, focusWidth]);
+      const yFocus = d3.scaleLinear().domain([0, yMaxAll]).range([focusHeight, 0]);
 
       const tickInterval = computeTickInterval(xFocus.domain());
       const tickFormat = computeTickFormat(xFocus.domain());
       const xAxisFocus = d3.axisBottom(xFocus).ticks(tickInterval).tickFormat(tickFormat);
 
-      const yTicks = computeCustomYAxisTicks(yFocus.domain()[1]);
-      const yAxisFocus = d3.axisLeft(yFocus).tickValues(yTicks);
+      const yTicks0 = computeCustomYAxisTicks(yFocus.domain()[1]);
+      const yAxisFocus = d3.axisLeft(yFocus).tickValues(yTicks0);
 
       const xAxisG = svgFocus.append("g")
         .attr("class", "axis x-axis")
@@ -408,9 +435,10 @@
         .call(xAxisFocus);
       removeOverlappingTicksX(xAxisG);
 
-      svgFocus.append("g")
+      const yAxisG = svgFocus.append("g")
         .attr("class", "axis y-axis")
         .call(yAxisFocus);
+      // removeOverlappingTicksY(yAxisG); // 必要ならON
 
       const lineFocus = d3.line()
         .defined(d => !isNaN(d.value))
@@ -468,60 +496,27 @@
           });
       });
 
-      // 凡例（複数都道府県）
-      const legendContainer = wrapper.append("div")
-        .attr("class", "chart-legend");
-
-      const selectedPrefs = getSelectedDropdownPrefs();
-
-      if (selectedPrefs.length > 1) {
-        const legend = legendContainer.append("div").attr("class", "legend");
-        const groupLookup = new Map(prefGroups);
-
-        selectedPrefs.forEach(pref => {
-          if (groupLookup.has(pref)) {
-            const legendColor =
-              isNationwide(pref) ? "blue" :
-              isTokyo(pref)      ? "red"  :
-              color(pref);
-
-            legend.append("span")
-              .attr("class", "legend-item")
-              .attr("data-pref", pref)
-              .style("color", legendColor)
-              .text(pref)
-              .on("click", () => {
-                highlightedPref = (highlightedPref === pref) ? null : pref;
-                updateVisibility(svgFocus, selectedPrefs);
-              });
-          }
-        });
-      }
-
-      // コンテキスト（スライダー）
-      const sliderWrapper = leftCharts.append("div")
-        .attr("class", "slider-wrapper");
+      // ---- Context（スライダー）も同様に実寸SVG
+      const sliderWrapper = leftCharts.append("div").attr("class", "slider-wrapper");
       sliderWrapper.append("h3").text("Time range");
 
-      const xContext = d3.scaleTime()
-        .domain(dataExtent)
-        .range([0, contextWidth]);
-
-      const xAxisContext = d3.axisBottom(xContext)
-        .ticks(d3.timeYear.every(3))
-        .tickFormat(d3.timeFormat("%Y"));   
-      
       const totalCtxW = contextWidth + contextMargin.left + contextMargin.right;
       const totalCtxH = contextHeight + contextMargin.top + contextMargin.bottom;
-      
+
       const svgContextRoot = sliderWrapper.append("svg")
         .attr("class", "svg-content")
         .attr("width", totalCtxW)
         .attr("height", totalCtxH);
-      
+
       const svgContext = svgContextRoot.append("g")
         .attr("transform", `translate(${contextMargin.left},${contextMargin.top})`);
-      
+
+      const xContext = d3.scaleTime().domain(dataExtent).range([0, contextWidth]);
+
+      const xAxisContext = d3.axisBottom(xContext)
+        .ticks(d3.timeYear.every(3))
+        .tickFormat(d3.timeFormat("%Y"));
+
       svgContext.append("g")
         .attr("class", "axis x-axis")
         .attr("transform", `translate(0,${contextHeight})`)
@@ -546,12 +541,12 @@
         .attr("y", 0)
         .attr("x", (d,i) => i === 0 ? -handleWidth/2 : contextWidth - handleWidth/2);
 
-      // 初期ブラシ位置
-      if (savedBrushExtents[category]) {
-        brushG.call(brush.move, [xContext(savedBrushExtents[category][0]), xContext(savedBrushExtents[category][1])]);
-      } else {
-        brushG.call(brush.move, [xContext(initialExtent[0]), xContext(initialExtent[1])]);
-      }
+      // 初期ブラシ位置（Date→pxへ）
+      const init = savedBrushExtents[category] || initialExtent;
+      brushG.call(brush.move, [xContext(init[0]), xContext(init[1])]);
+
+      // 凡例クリック時に参照できるよう、更新関数をこのカードにぶら下げる
+      container.node().__updateVisibility = () => updateVisibility(svgFocus, selectedPrefs);
 
       function brushed(event) {
         const sel = event.selection;
@@ -618,7 +613,7 @@
             );
         });
 
-        updateVisibility(svgFocus, getSelectedDropdownPrefs());
+        updateVisibility(svgFocus, selectedPrefs);
       }
 
       function updateVisibility(svg, prefs) {
@@ -639,4 +634,3 @@
   </script>
 </body>
 </html>
-
