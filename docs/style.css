@@ -188,9 +188,17 @@ h1 {
 
 
 /* 凡例 */
+/* デフォルト（スマホ含む） */
 .legend {
-  text-align: left;          /* ←左寄せ */
-  font-size: clamp(10px, 1.5vw, 15px);
+  text-align: left;
+  font-size: 13px;
+}
+
+/* PC以上では少し小さく */
+@media (min-width: 900px) {
+  .legend {
+    font-size: 11px;
+  }
 }
 
 .legend-item {
@@ -300,6 +308,7 @@ header p {
   fill-opacity: 0.5;   /* 透明度はお好みで調整 */
   cursor: move;
 }
+
 
 
 
