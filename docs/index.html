@@ -375,12 +375,17 @@
       const leftCharts = wrapper.append("div")
         .attr("class", "left-charts");
 
-      const svgFocus = leftCharts.append("svg")
+      const totalFocusW = focusWidth + focusMargin.left + focusMargin.right;
+      const totalFocusH = focusHeight + focusMargin.top + focusMargin.bottom;
+
+      const svgFocusRoot = leftCharts.append("svg")
         .attr("class", "svg-content chart-svg")
-        .attr("viewBox", `0 0 ${focusWidth + focusMargin.left + focusMargin.right} ${focusHeight + focusMargin.top + focusMargin.bottom}`)
-        .attr("preserveAspectRatio", "xMidYMid meet")
-        .append("g")
+        .attr("width", totalFocusW)
+        .attr("height", totalFocusH);
+
+      const svgFocus = svgFocusRoot.append("g")
         .attr("transform", `translate(${focusMargin.left},${focusMargin.top})`);
+
 
       const xFocus = d3.scaleTime()
         .domain(initialExtent)
@@ -506,13 +511,17 @@
         .ticks(d3.timeYear.every(3))
         .tickFormat(d3.timeFormat("%Y"));   
       
-      const svgContext = sliderWrapper.append("svg")
+      const totalCtxW = contextWidth + contextMargin.left + contextMargin.right;
+      const totalCtxH = contextHeight + contextMargin.top + contextMargin.bottom;
+      
+      const svgContextRoot = sliderWrapper.append("svg")
         .attr("class", "svg-content")
-        .attr("viewBox", `0 0 ${contextWidth + contextMargin.left + contextMargin.right} ${contextHeight + contextMargin.top + contextMargin.bottom}`)
-        .attr("preserveAspectRatio", "xMidYMid meet")
-        .append("g")
+        .attr("width", totalCtxW)
+        .attr("height", totalCtxH);
+      
+      const svgContext = svgContextRoot.append("g")
         .attr("transform", `translate(${contextMargin.left},${contextMargin.top})`);
-
+      
       svgContext.append("g")
         .attr("class", "axis x-axis")
         .attr("transform", `translate(0,${contextHeight})`)
@@ -630,3 +639,4 @@
   </script>
 </body>
 </html>
+
