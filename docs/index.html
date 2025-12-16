@@ -127,10 +127,19 @@
 
     // disease_lookup と一致（全カテゴリ順）
     const allCategoryOrder = [
-      "Flu","RSV","Adenovirus infection","Strep throat","Gastroenteritis","Chickenpox",
-      "Hand-foot-mouth disease","Fifth disease","Roseola","Herpangina","Mumps",
-      "Hemorrhagic conjunctivitis","Viral conjunctivitis","Bacterial meningitis","Viral meningitis",
-      "Mycoplasma pneumonia","Chlamydia pneumonia","Rotavirus","Whooping cough","COVID-19"
+      // まず見たい：社会的インパクトが大きい & 変動も大きい
+      "COVID-19","Flu","RSV","Gastroenteritis",
+      // 小児で流行しやすく、ニュースにもなりやすい
+      "Hand-foot-mouth disease","Chickenpox","Roseola","Fifth disease","Herpangina","Mumps",
+      // 眼科系（集団感染・学校/職場で話題になりやすい）
+      "Viral conjunctivitis","Hemorrhagic conjunctivitis",
+      // 肺炎系（重症化の文脈で見せたい）
+      "Mycoplasma pneumonia",
+      "Chlamydia pneumonia",
+      // 髄膜炎（頻度は高くないが重いので後半でまとまって提示）
+      "Bacterial meningitis","Viral meningitis",
+      // その他（一般の認知が相対的に低いので最後）
+      "Adenovirus infection","Strep throat","Rotavirus"
     ];
 
     // デフォルト表示（指定の5つ）
@@ -621,3 +630,4 @@
   </script>
 </body>
 </html>
+
