@@ -9,7 +9,7 @@
   <script src="https://d3js.org/d3.v6.min.js"></script>
 
   <!-- 外部CSS -->
-  <link rel="stylesheet" href="style25.css" />
+  <link rel="stylesheet" href="style24.css" />
 
   <!-- d3-simple-slider（あなたのコードに合わせて残す） -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/d3-simple-slider/1.6.3/d3-simple-slider.css" />
@@ -229,15 +229,36 @@
       });
     }
 
-    function setupResizeRedraw(){
-      let t = null;
-      window.addEventListener("resize", () => {
-        clearTimeout(t);
-        t = setTimeout(() => {
-          drawAllCharts(getSelectedDropdownPrefs());
-        }, 180);
-      });
-    }
+function setupResizeRedraw(){
+  let t = null;
+
+  // ★「幅」だけ監視（iOSのスクロール由来の高さ変化は無視する）
+  let lastW = (window.visualViewport ? window.visualViewport.width : window.innerWidth);
+
+  window.addEventListener("resize", () => {
+    const w = (window.visualViewport ? window.visualViewport.width : window.innerWidth);
+
+    // 幅がほぼ変わってないなら再描画しない（スクロールでのresize対策）
+    if (Math.abs(w - lastW) < 2) return;
+
+    lastW = w;
+
+    clearTimeout(t);
+    t = setTimeout(() => {
+      drawAllCharts(getSelectedDropdownPrefs());
+    }, 180);
+  });
+
+  // 端末回転は明示的に再描画
+  window.addEventListener("orientationchange", () => {
+    clearTimeout(t);
+    t = setTimeout(() => {
+      lastW = (window.visualViewport ? window.visualViewport.width : window.innerWidth);
+      drawAllCharts(getSelectedDropdownPrefs());
+    }, 250);
+  });
+}
+
 
     /***********************************************
      * 都道府県ドロップダウン
@@ -693,6 +714,7 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
 
 
 
