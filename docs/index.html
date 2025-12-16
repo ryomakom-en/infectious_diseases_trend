@@ -294,7 +294,7 @@
       const resetBtn = document.getElementById("disease-reset");
 
       function refreshOptions() {
-        select.innerHTML = '<option value="">（選択して追加）</option>';
+        select.innerHTML = '<option value="">（Select diseases to add）</option>';
         allCategoryOrder
           .filter(c => !selectedCategories.has(c))
           .forEach(c => {
@@ -453,7 +453,7 @@
           .on("mouseover", function(event, d) {
             d3.select(this).classed("highlight-circle", true);
             tooltip.transition().duration(200).style("opacity", 0.9);
-            tooltip.html(`<strong>${pref}</strong><br>定点当たり患者数: ${d.value}<br>${d.weekLabel || ""}`)
+            tooltip.html(`<strong>${pref}</strong><br>Cases per site: ${d.value}<br>${d.weekLabel || ""}`)
               .style("left", (event.pageX + 10) + "px")
               .style("top", (event.pageY - 28) + "px");
           })
@@ -630,6 +630,7 @@
   </script>
 </body>
 </html>
+
 
 
 
