@@ -408,16 +408,7 @@ const contextMargin = { top: 6, right: 20, bottom: 18, left: 36 };
 const CONTEXT_OUTER_H = 70;
 const contextHeight = 22;
 
-      // ===== Focus chart layout constants =====
-const focusMargin = { top: 10, right: 20, bottom: 28, left: 36 };
 
-// フォーカスチャートの「外枠高さ」
-//（あなたの要望どおり、縦長すぎない控えめサイズ）
-const FOCUS_OUTER_H = 220;
-
-// 描画領域の高さ（外枠 − margin）
-const focusHeight =
-  FOCUS_OUTER_H - focusMargin.top - focusMargin.bottom;
 
       data.sort((a, b) => a.date - b.date);
       const dataExtent = d3.extent(data, d => d.date);
@@ -649,42 +640,6 @@ if (savedBrushExtents[category]) {
 }
 
 
-
-const ctxAxisG = svgContext.append("g")
-  .attr("class", "axis x-axis")
-  .attr("transform", `translate(0,${contextHeight})`)
-  .call(xAxisContext);
-
-// ★追加：狭い時に目盛りが潰れないよう、元コードの重なり除去を適用
-removeOverlappingTicksX(ctxAxisG);
-
-const brush = d3.brushX()
-  .extent([[0, 0], [contextWidth, contextHeight]])
-  .on("brush end", brushed);
-
-const brushG = svgContext.append("g")
-  .attr("class", "brush")
-  .call(brush);
-
-// ハンドル（あなたの指定維持）
-const handleWidth  = 30;
-const handleHeight = contextHeight;
-
-brushG.selectAll(".handle")
-  .attr("width",  handleWidth)
-  .attr("height", handleHeight)
-  .attr("rx", 0).attr("ry", 0)
-  .attr("y", 0)
-  .attr("x", (d,i) => i === 0 ? -handleWidth/2 : contextWidth - handleWidth/2);
-
-// 初期ブラシ位置（元コード通り）
-if (savedBrushExtents[category]) {
-  brushG.call(brush.move, [xContext(savedBrushExtents[category][0]), xContext(savedBrushExtents[category][1])]);
-} else {
-  brushG.call(brush.move, [xContext(initialExtent[0]), xContext(initialExtent[1])]);
-}
-
-
       // 初期表示でもハイライト反映
       updateVisibility(svgFocus, selectedPrefs);
 
@@ -775,6 +730,7 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
 
 
 
