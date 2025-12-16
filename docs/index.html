@@ -405,8 +405,10 @@ const focusHeight =
 
 // --- Context (slider) ---
 const contextMargin = { top: 6, right: 26, bottom: 30, left: 44 }; // ★下・左右を増やす
-const CONTEXT_OUTER_H = 92;                                        // ★viewBoxの高さを増やす
 const contextHeight = 26;                                          // ★軸を少し下げる
+const CONTEXT_OUTER_H =
+  contextHeight + contextMargin.top + contextMargin.bottom;        // ★外枠は「中身＋margin」で自動計算
+
 
 
 
@@ -731,6 +733,7 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
 
 
 
