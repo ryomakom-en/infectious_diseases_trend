@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+d<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -393,6 +393,17 @@ function setupResizeRedraw(){
      *   - leftWをカード内実幅から算出してはみ出し防止
      ***********************************************/
     function drawFocusContextChart(category, data) {
+      // ===== Focus chart layout constants =====
+const focusMargin = { top: 10, right: 20, bottom: 28, left: 36 };
+
+// フォーカスチャートの「外枠高さ」
+//（あなたの要望どおり、縦長すぎない控えめサイズ）
+const FOCUS_OUTER_H = 220;
+
+// 描画領域の高さ（外枠 − margin）
+const focusHeight =
+  FOCUS_OUTER_H - focusMargin.top - focusMargin.bottom;
+
       data.sort((a, b) => a.date - b.date);
       const dataExtent = d3.extent(data, d => d.date);
       const yMaxAll = d3.max(data, d => d.value) || 0;
@@ -706,6 +717,7 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
 
 
 
