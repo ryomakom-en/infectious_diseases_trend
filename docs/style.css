@@ -117,11 +117,13 @@ h1 {
 }
 
 .chart-legend {
-  flex: 0 0 220px;      /* ←凡例カラムの幅。200〜260で調整 */
-  padding-left: 8px;    /* ←グラフから少し離す（左に寄せる） */
-  padding-right: 6px;   /* ←右端の余白（はみ出し防止） */
+  flex: 0 1 160px;          /* 160を基準に、必要なら縮む */
+  max-width: 200px;         /* 広がりすぎない上限 */
+  padding-left: 8px;
+  padding-right: 6px;
   box-sizing: border-box;
 }
+
 
 /* SVG */
 .svg-content {
@@ -298,4 +300,5 @@ header p {
   fill-opacity: 0.5;   /* 透明度はお好みで調整 */
   cursor: move;
 }
+
 
