@@ -66,7 +66,7 @@ pref_lookup <- tibble::tribble(
 )
 
 disease_lookup <- tibble::tribble(
-  ~disease, ~disease_en,
+  ~category, ~category_en,
   "インフルエンザ", "Flu",
   "ＲＳウイルス感染症", "RSV",
   "咽頭結膜熱", "Adenovirus infection",
@@ -329,6 +329,7 @@ if (length(data_list) > 0) {
 
 
 ```
+
 
 
 
