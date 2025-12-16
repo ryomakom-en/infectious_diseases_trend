@@ -9,7 +9,7 @@
   <script src="https://d3js.org/d3.v6.min.js"></script>
 
   <!-- 外部CSS -->
-  <link rel="stylesheet" href="style26.css" />
+  <link rel="stylesheet" href="style27.css" />
 
   <!-- d3-simple-slider（あなたのコードに合わせて残す） -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/d3-simple-slider/1.6.3/d3-simple-slider.css" />
@@ -450,29 +450,16 @@ function setupResizeRedraw(){
       const available = Math.floor(cardInnerW - (oneCol ? 0 : (legendW + GAP)));
       const leftW = Math.max(260, available);   // ★520強制をやめる（枠内に収める）
       leftCharts.style("width", leftW + "px");
-// ★軸フォント36pxに合わせて下マージンを増やす（年ラベルが切れないように）
-const focusMargin = { top: 10, right: 40, bottom: 90, left: 33 };
 
-// ★全体の見た目の高さを少し増やす（プロット面積を確保）
-const FOCUS_OUTER_H = 300; // 好みで 400〜460 の範囲で調整OK
+// ★ここで「実際の leftCharts の幅」を測る（flexで縮んだ分を反映）
+const leftChartsW = leftCharts.node().clientWidth;
 
-const focusHeight = FOCUS_OUTER_H - focusMargin.top - focusMargin.bottom;
-
-// SVG外枠
-const totalFocusW = leftW;
+// SVG外枠（実測に合わせる）
+const totalFocusW = leftChartsW;
 const totalFocusH = FOCUS_OUTER_H;
 
 // 描画領域
 const focusWidth = Math.max(1, totalFocusW - focusMargin.left - focusMargin.right);
-
-
-const contextMargin = { top: 10, right: 100, bottom: 30, left: 24 };
-const contextHeight = 60 - contextMargin.top - contextMargin.bottom;
-
-const totalCtxW = leftW;
-const totalCtxH = contextHeight + contextMargin.top + contextMargin.bottom;
-
-const contextWidth = Math.max(1, totalCtxW - contextMargin.left - contextMargin.right);
 
 const svgFocusRoot = leftCharts.append("svg")
   .attr("class", "svg-content chart-svg")
@@ -580,7 +567,19 @@ const xAxisContext = d3.axisBottom(xContext)
 // ★元コード方式：viewBox + preserveAspectRatio に戻す
 const svgContext = sliderWrapper.append("svg")
   .attr("class", "svg-content")
-  .attr("viewBox", `0 0 ${contextWidth + contextMargin.left + contextMargin.right} ${contextHeight + contextMargin.top + contextMargin.bottom}`)
+const totalCtxW = leftChartsW;
+const totalCtxH = contextHeight + contextMargin.top + contextMargin.bottom;
+
+// contextWidth は「外枠 − margin」
+const contextWidth = Math.max(1, totalCtxW - contextMargin.left - contextMargin.right);
+
+const svgContext = sliderWrapper.append("svg")
+  .attr("class", "svg-content")
+  .attr("viewBox", `0 0 ${totalCtxW} ${totalCtxH}`)
+  .attr("preserveAspectRatio", "xMidYMid meet")
+  .append("g")
+  .attr("transform", `translate(${contextMargin.left},${contextMargin.top})`);
+
   .attr("preserveAspectRatio", "xMidYMid meet")
   .append("g")
   .attr("transform", `translate(${contextMargin.left},${contextMargin.top})`);
@@ -710,6 +709,7 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
 
 
 
