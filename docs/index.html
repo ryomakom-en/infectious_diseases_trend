@@ -429,13 +429,21 @@
       const available = Math.floor(cardInnerW - (oneCol ? 0 : (legendW + GAP)));
       const leftW = Math.max(260, available);   // ★520強制をやめる（枠内に収める）
       leftCharts.style("width", leftW + "px");
-// サイズ（はみ出し防止：SVG外枠幅を leftW に一致させる）
-const focusMargin = { top: 10, right: 40, bottom: 33, left: 100 };
-const focusHeight = 320 - focusMargin.top - focusMargin.bottom;
+// ★軸フォント36pxに合わせて下マージンを増やす（年ラベルが切れないように）
+const focusMargin = { top: 10, right: 40, bottom: 90, left: 100 };
 
-// ★SVG全体（外枠）の幅は leftW と同じに固定
+// ★全体の見た目の高さを少し増やす（プロット面積を確保）
+const FOCUS_OUTER_H = 420; // 好みで 400〜460 の範囲で調整OK
+
+const focusHeight = FOCUS_OUTER_H - focusMargin.top - focusMargin.bottom;
+
+// SVG外枠
 const totalFocusW = leftW;
-const totalFocusH = focusHeight + focusMargin.top + focusMargin.bottom;
+const totalFocusH = FOCUS_OUTER_H;
+
+// 描画領域
+const focusWidth = Math.max(1, totalFocusW - focusMargin.left - focusMargin.right);
+
 
 // ★描画領域は「外枠 − マージン」
 // （ここで260pxなどの強制下限は入れない。入れると外枠を超えてはみ出す）
@@ -685,5 +693,6 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
 
 
