@@ -294,7 +294,7 @@
       const resetBtn = document.getElementById("disease-reset");
 
       function refreshOptions() {
-        select.innerHTML = '<option value="">（Select diseases to add）</option>';
+        select.innerHTML = '<option value="">（from here）</option>';
         allCategoryOrder
           .filter(c => !selectedCategories.has(c))
           .forEach(c => {
@@ -630,6 +630,7 @@
   </script>
 </body>
 </html>
+
 
 
 
