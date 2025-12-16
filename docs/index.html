@@ -466,10 +466,6 @@ const totalFocusH = FOCUS_OUTER_H;
 const focusWidth = Math.max(1, totalFocusW - focusMargin.left - focusMargin.right);
 
 
-// ★描画領域は「外枠 − マージン」
-// （ここで260pxなどの強制下限は入れない。入れると外枠を超えてはみ出す）
-const focusWidth = Math.max(1, totalFocusW - focusMargin.left - focusMargin.right);
-
 const contextMargin = { top: 10, right: 100, bottom: 30, left: 70 };
 const contextHeight = 60 - contextMargin.top - contextMargin.bottom;
 
@@ -714,6 +710,7 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
 
 
 
