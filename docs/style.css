@@ -117,7 +117,10 @@ h1 {
 }
 
 .chart-legend {
-  width: clamp(30px, 6vw, 70px);
+  flex: 0 0 220px;      /* ←凡例カラムの幅。200〜260で調整 */
+  padding-left: 8px;    /* ←グラフから少し離す（左に寄せる） */
+  padding-right: 6px;   /* ←右端の余白（はみ出し防止） */
+  box-sizing: border-box;
 }
 
 /* SVG */
@@ -184,7 +187,7 @@ h1 {
 
 /* 凡例 */
 .legend {
-  text-align: center;
+  text-align: left;          /* ←左寄せ */
   font-size: clamp(10px, 1.5vw, 15px);
 }
 
@@ -193,6 +196,10 @@ h1 {
   margin: 5px 0;
   font-weight: bold;
   cursor: pointer;
+
+  text-align: left;          /* ←起点を揃える */
+  white-space: normal;       /* ←折り返しOK */
+  overflow-wrap: anywhere;   /* ←長い単語も折り返す */
 }
 
 /* SVGの間隔 */
@@ -291,3 +298,4 @@ header p {
   fill-opacity: 0.5;   /* 透明度はお好みで調整 */
   cursor: move;
 }
+
