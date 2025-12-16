@@ -429,26 +429,30 @@
       const available = Math.floor(cardInnerW - (oneCol ? 0 : (legendW + GAP)));
       const leftW = Math.max(260, available);   // ★520強制をやめる（枠内に収める）
       leftCharts.style("width", leftW + "px");
+// サイズ（はみ出し防止：SVG外枠幅を leftW に一致させる）
+const focusMargin = { top: 10, right: 40, bottom: 33, left: 100 };
+const focusHeight = 320 - focusMargin.top - focusMargin.bottom;
 
-      // サイズ（あなたの元の寸法感を維持しつつ、widthだけ可変に）
-      const focusMargin = { top: 10, right: 40, bottom: 33, left: 100 };
-      const focusHeight = 320 - focusMargin.top - focusMargin.bottom;
-      const focusWidth  = Math.max(260, leftW - focusMargin.left - focusMargin.right);
+// ★SVG全体（外枠）の幅は leftW と同じに固定
+const totalFocusW = leftW;
+const totalFocusH = focusHeight + focusMargin.top + focusMargin.bottom;
 
-      const contextMargin = { top: 10, right: 100, bottom: 30, left: 70 };
-      const contextHeight = 60 - contextMargin.top - contextMargin.bottom;
-      const contextWidth  = Math.max(260, leftW - contextMargin.left - contextMargin.right);
+// ★描画領域は「外枠 − マージン」
+// （ここで260pxなどの強制下限は入れない。入れると外枠を超えてはみ出す）
+const focusWidth = Math.max(1, totalFocusW - focusMargin.left - focusMargin.right);
 
-      /* --------------------------
-         Focus SVG（viewBoxをやめて実寸）
-         -------------------------- */
-      const totalFocusW = focusWidth + focusMargin.left + focusMargin.right;
-      const totalFocusH = focusHeight + focusMargin.top + focusMargin.bottom;
+const contextMargin = { top: 10, right: 100, bottom: 30, left: 70 };
+const contextHeight = 60 - contextMargin.top - contextMargin.bottom;
 
-      const svgFocusRoot = leftCharts.append("svg")
-        .attr("class", "svg-content chart-svg")
-        .attr("width", totalFocusW)
-        .attr("height", totalFocusH);
+const totalCtxW = leftW;
+const totalCtxH = contextHeight + contextMargin.top + contextMargin.bottom;
+
+const contextWidth = Math.max(1, totalCtxW - contextMargin.left - contextMargin.right);
+
+const svgFocusRoot = leftCharts.append("svg")
+  .attr("class", "svg-content chart-svg")
+  .attr("width", totalFocusW)
+  .attr("height", totalFocusH);
 
       const svgFocus = svgFocusRoot.append("g")
         .attr("transform", `translate(${focusMargin.left},${focusMargin.top})`);
@@ -681,4 +685,5 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
 
