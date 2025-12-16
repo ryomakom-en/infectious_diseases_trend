@@ -89,13 +89,7 @@ disease_lookup <- tibble::tribble(
   "COVID-19", "COVID-19"
 )
 
-cleaned_diseases <- read_csv("merged_data/merged_data.csv") %>%
-  left_join(pref_lookup, by = "pref") %>%
-  select(-pref) %>%
-  rename(pref=pref_en) %>%
-  left_join(disease_lookup, by = "category") %>%
-  select(-category) %>%
-  rename(category=category_en)
+cleaned_diseases <- read_csv("merged_data/merged_data.csv")
 
 # CSVファイルを処理する関数
 process_csv <- function(file_path) {
@@ -271,7 +265,13 @@ for (week_label in distinct_weeks) {
         select(date, pref, category, value, year, week_label_clean) %>%
         mutate(value = as.double(value)) %>%
         filter(!(category == "ＲＳウイルス感染症" & is.na(value))) %>%
-        mutate(value = ifelse(is.na(value), 0, value))
+        mutate(value = ifelse(is.na(value), 0, value)) %>%
+        left_join(pref_lookup, by = "pref") %>%
+        select(-pref) %>%
+        rename(pref=pref_en) %>%
+        left_join(disease_lookup, by = "category") %>%
+        select(-category) %>%
+        rename(category=category_en)
 
       log_entry <- tibble(
         timestamp  = as.character(ts),
@@ -317,11 +317,12 @@ if (length(data_list) > 0) {
   cleaned_diseases <- cleaned_diseases %>%
     bind_rows(latest_data) %>% distinct()
   cleaned_diseases %>%
-    filter(pref == "全国")  %>% write_excel_csv("docs/results/data-全国.csv")
+    filter(pref == "Nationwide")  %>% write_excel_csv("docs/results/data-全国.csv")
   cleaned_diseases %>%
-    filter(pref == "東京都") %>% write_excel_csv("docs/results/data-東京都.csv")
+    filter(pref == "Tokyo") %>% write_excel_csv("docs/results/data-東京都.csv")
   cleaned_diseases %>%
-    filter(!pref %in% c("全国","東京都")) %>% write_excel_csv("docs/results/data-その他.csv")
+    filter(!pref %in% c("Nationwide","Tokyo")) %>%
+    write_excel_csv("docs/results/data-その他.csv")
   cleaned_diseases %>% write_excel_csv("merged_data/merged_data.csv")
 } else {
   message("新規データがありませんでした。")
