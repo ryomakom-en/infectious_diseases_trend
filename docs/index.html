@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -9,11 +10,7 @@
   <script src="https://d3js.org/d3.v6.min.js"></script>
 
   <!-- 外部CSS -->
-  <link rel="stylesheet" href="style38.css" />
-
-  <!-- d3-simple-slider（あなたのコードに合わせて残す） -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/d3-simple-slider/1.6.3/d3-simple-slider.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-simple-slider/1.6.3/d3-simple-slider.min.js"></script>
+  <link rel="stylesheet" href="style39.css" />
 </head>
 
 <body>
@@ -110,16 +107,6 @@
         }
       });
     }
-    function removeOverlappingTicksY(axisSelection) {
-      let lastBottom = -Infinity;
-      axisSelection.selectAll("text").each(function () {
-        const rect = this.getBoundingClientRect();
-        if (rect.top < lastBottom) {
-          d3.select(this).style("display", "none");
-        } else {
-          d3.select(this).style("display", null);
-          lastBottom = rect.bottom;
-        }
       });
     }
 
@@ -936,18 +923,3 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
