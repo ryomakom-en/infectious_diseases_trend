@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -11,13 +10,18 @@
 
   <!-- 外部CSS -->
   <link rel="stylesheet" href="style39.css" />
+
+  <!-- d3-simple-slider（あなたのコードに合わせて残す） -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/d3-simple-slider/1.6.3/d3-simple-slider.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-simple-slider/1.6.3/d3-simple-slider.min.js"></script>
 </head>
 
 <body>
   <header>
     <h1>Infectious Disease Trends by Prefecture in Japan</h1>
+
     <p style="font-size:16px; line-height:1.5;">
-      Using data from 
+      Using data from
       <a href="https://id-info.jihs.go.jp/surveillance/idwr/rapid/sokuhou.html" target="_blank" rel="noopener">
         Japan’s National Institute of Infectious Diseases
       </a>,
@@ -25,32 +29,29 @@
       disease cases per sentinel site by prefecture. Data collection is automated with GitHub Actions, and all visualizations
       are built in D3.js. Drag the yellow bar at the bottom to change the time range.
     </p>
+
     <p style="font-size:14px; text-align:right;">Ryoma Komiyama</p>
     <hr style="margin: 20px 0; border: none; border-top: 2px solid #ddd;">
   </header>
 
-<section class="controls-card">
+  <section class="controls-card">
+    <div class="controls-title">
+      Compare regions and diseases
+    </div>
 
-  <div class="controls-title">
-    Compare regions and diseases
-  </div>
+    <!-- Prefectures -->
+    <div class="filter-group">
+      <div class="filter-actions">
+        <div class="select-wrap">
+          <select id="pref-add">
+            <option value="">Add prefecture</option>
+          </select>
+        </div>
 
-  <!-- Prefectures -->
-  <div class="filter-group">
-
-<div class="filter-actions">
-
-  <div class="select-wrap">
-    <select id="pref-add">
-      <option value="">Add prefecture</option>
-    </select>
-  </div>
-
-  <button id="pref-reset" type="button" class="link-button">
-    Reset to default
-  </button>
-</div>
-    
+        <button id="pref-reset" type="button" class="link-button">
+          Reset to default
+        </button>
+      </div>
     </div>
 
     <div id="pref-selected" class="filter-tags">
@@ -63,31 +64,25 @@
       <div id="dropdown-content" class="dropdown-content"></div>
     </div>
 
-  </div>
+    <!-- Diseases -->
+    <div class="filter-group">
+      <div class="filter-actions">
+        <div class="select-wrap">
+          <select id="disease-add">
+            <option value="">Add disease</option>
+          </select>
+        </div>
 
-  <!-- Diseases -->
-  <div class="filter-group">
+        <button id="disease-reset" type="button" class="link-button">
+          Reset to default
+        </button>
+      </div>
 
-    <div class="filter-actions">
-<div class="select-wrap">
-  <select id="disease-add">
-    <option value="">Add disease</option>
-  </select>
-</div>
-
-      <button id="disease-reset" type="button" class="link-button">
-        Reset to default
-      </button>
+      <div id="disease-selected" class="filter-tags">
+        <!-- COVID-19 × Flu × RSV × ... -->
+      </div>
     </div>
-
-    <div id="disease-selected" class="filter-tags">
-      <!-- COVID-19 × Flu × RSV × ... -->
-    </div>
-
-  </div>
-
-</section>
-
+  </section>
 
   <div id="chart-container"></div>
 
@@ -107,6 +102,16 @@
         }
       });
     }
+    function removeOverlappingTicksY(axisSelection) {
+      let lastBottom = -Infinity;
+      axisSelection.selectAll("text").each(function () {
+        const rect = this.getBoundingClientRect();
+        if (rect.top < lastBottom) {
+          d3.select(this).style("display", "none");
+        } else {
+          d3.select(this).style("display", null);
+          lastBottom = rect.bottom;
+        }
       });
     }
 
@@ -923,3 +928,4 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
