@@ -26,23 +26,46 @@
     <hr style="margin: 20px 0; border: none; border-top: 2px solid #ddd;">
   </header>
 
-  <!-- 都道府県選択 -->
-  <div id="controls">
-    <label for="pref-dropdown">Select prefectures to show:</label>
+<section class="controls-card">
+
+  <div class="controls-title">
+    Compare regions and diseases
+  </div>
+
+  <!-- Prefectures -->
+  <div class="filter-group">
+    <div class="filter-label">Prefectures</div>
+
+    <div id="pref-selected" class="filter-tags">
+      <!-- JSで動的に入る -->
+    </div>
+
     <div id="pref-dropdown" class="dropdown">
-      <div id="dropdown-btn" class="dropdown-btn">(from here)</div>
+      <div id="dropdown-btn" class="dropdown-btn">+ Add prefecture</div>
       <div id="dropdown-content" class="dropdown-content"></div>
     </div>
   </div>
 
-  <!-- 病気追加（デフォルト5 + 追加） -->
-  <div id="category-controls" style="margin: 12px 0 6px; text-align:center;">
-    <label for="disease-add">Select diseases to add:</label>
-    <select id="disease-add">
-      <option value="">（from here）</option>
-    </select>
-    <button id="disease-reset" type="button">Reset to 5 diseases</button>
+  <!-- Diseases -->
+  <div class="filter-group">
+    <div class="filter-label">Diseases shown</div>
+
+    <div id="disease-selected" class="filter-tags">
+      <!-- JSで動的に入る -->
+    </div>
+
+    <div class="filter-actions">
+      <select id="disease-add">
+        <option value="">+ Add disease</option>
+      </select>
+      <button id="disease-reset" type="button" class="link-button">
+        Reset to default
+      </button>
+    </div>
   </div>
+
+</section>
+
 
   <div id="chart-container"></div>
 
@@ -733,4 +756,5 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
 
