@@ -60,7 +60,7 @@
 
   <!-- Diseases -->
   <div class="filter-group">
-    <div class="filter-label">Diseases shown</div>
+    <div class="filter-label">Diseases shown below</div>
 
     <div id="disease-selected" class="filter-tags">
       <!-- JSで動的に入る -->
@@ -405,7 +405,7 @@ function setupResizeRedraw(){
       const resetBtn = document.getElementById("disease-reset");
 
       function refreshOptions() {
-        select.innerHTML = '<option value="">（from here）</option>';
+        select.innerHTML = '<option value="">Add diseases</option>';
         allCategoryOrder
           .filter(c => !selectedCategories.has(c))
           .forEach(c => {
@@ -441,7 +441,7 @@ function setupResizeRedraw(){
   const resetBtn = document.getElementById("pref-reset");
 
   function refreshOptions(){
-    select.innerHTML = '<option value="">+ Add prefecture</option>';
+    select.innerHTML = '<option value="">Add prefecture</option>';
 
     const selected = new Set(getSelectedDropdownPrefs());
     prefectureOrder
@@ -828,7 +828,7 @@ if (savedBrushExtents[category]) {
                 .on("mouseover", function(event, d) {
                   d3.select(this).classed("highlight-circle", true);
                   tooltip.transition().duration(200).style("opacity", 0.9);
-                  tooltip.html(`<strong>${pref}</strong><br>定点当たり患者数: ${d.value}<br>${d.weekLabel || ""}`)
+                  tooltip.html(`<strong>${pref}</strong><br>Cases per site: ${d.value}<br>${d.weekLabel || ""}`)
                     .style("left", (event.pageX + 10) + "px")
                     .style("top", (event.pageY - 28) + "px");
                 })
@@ -866,6 +866,7 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
 
 
 
