@@ -9,7 +9,7 @@
   <script src="https://d3js.org/d3.v6.min.js"></script>
 
   <!-- 外部CSS -->
-  <link rel="stylesheet" href="style32.css" />
+  <link rel="stylesheet" href="style33.css" />
 
   <!-- d3-simple-slider（あなたのコードに合わせて残す） -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/d3-simple-slider/1.6.3/d3-simple-slider.css" />
@@ -300,6 +300,7 @@ function setupResizeRedraw(){
             d3.select(this).classed("selected", !d3.select(this).classed("selected"));
             updateDropdownBtn();
             drawAllCharts(getSelectedDropdownPrefs());
+            renderSelectedTags();
           });
       });
 
@@ -328,6 +329,7 @@ function setupResizeRedraw(){
         .classed("selected", true);
 
       updateDropdownBtn();
+      renderSelectedTags();
     }
 
     function updateDropdownBtn() {
@@ -340,6 +342,41 @@ function setupResizeRedraw(){
       }
     }
 
+    function renderSelectedTags(){
+  // Prefectures
+  const prefBox = d3.select("#pref-selected");
+  prefBox.html("");
+
+  getSelectedDropdownPrefs().forEach(p => {
+    prefBox.append("div")
+      .attr("class", "filter-tag")
+      .text(p + " ×")
+      .on("click", () => {
+        d3.select(`#dropdown-content .option[data-pref="${p}"]`)
+          .classed("selected", false);
+        updateDropdownBtn();
+        drawAllCharts(getSelectedDropdownPrefs());
+        renderSelectedTags();
+      });
+  });
+
+  // Diseases
+  const diseaseBox = d3.select("#disease-selected");
+  diseaseBox.html("");
+
+  [...selectedCategories].forEach(d => {
+    diseaseBox.append("div")
+      .attr("class", "filter-tag")
+      .text(d + " ×")
+      .on("click", () => {
+        selectedCategories.delete(d);
+        drawAllCharts(getSelectedDropdownPrefs());
+        renderSelectedTags();
+      });
+  });
+}
+
+    
     function getSelectedDropdownPrefs() {
       const options = d3.selectAll("#dropdown-content .option").nodes();
       return options
@@ -373,12 +410,14 @@ function setupResizeRedraw(){
         refreshOptions();
         select.value = "";
         drawAllCharts(getSelectedDropdownPrefs());
+        renderSelectedTags();
       });
 
       resetBtn.addEventListener("click", () => {
         selectedCategories = new Set(defaultCategories);
         refreshOptions();
         drawAllCharts(getSelectedDropdownPrefs());
+        renderSelectedTags();
       });
 
       refreshOptions();
@@ -756,5 +795,6 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
 
 
