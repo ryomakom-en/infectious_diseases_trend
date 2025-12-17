@@ -41,14 +41,19 @@
   <!-- Prefectures -->
   <div class="filter-group">
 
-    <div class="filter-actions">
-      <select id="pref-add">
-        <option value="">Add prefecture</option>
-      </select>
+<div class="filter-actions">
 
-      <button id="pref-reset" type="button" class="link-button">
-        Reset to default
-      </button>
+  <div class="select-wrap">
+    <select id="pref-add">
+      <option value="">Add prefecture</option>
+    </select>
+  </div>
+
+  <button id="pref-reset" type="button" class="link-button">
+    Reset to default
+  </button>
+</div>
+    
     </div>
 
     <div id="pref-selected" class="filter-tags">
@@ -67,9 +72,11 @@
   <div class="filter-group">
 
     <div class="filter-actions">
-      <select id="disease-add">
-        <option value="">Add disease</option>
-      </select>
+<div class="select-wrap">
+  <select id="disease-add">
+    <option value="">Add disease</option>
+  </select>
+</div>
 
       <button id="disease-reset" type="button" class="link-button">
         Reset to default
@@ -929,6 +936,7 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
 
 
 
