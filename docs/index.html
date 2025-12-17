@@ -9,7 +9,7 @@
   <script src="https://d3js.org/d3.v6.min.js"></script>
 
   <!-- 外部CSS -->
-  <link rel="stylesheet" href="style35.css" />
+  <link rel="stylesheet" href="style36.css" />
 
   <!-- d3-simple-slider（あなたのコードに合わせて残す） -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/d3-simple-slider/1.6.3/d3-simple-slider.css" />
@@ -38,48 +38,48 @@
     Compare regions and diseases
   </div>
 
-<!-- Prefectures -->
-<div class="filter-group">
-  <div class="filter-label">Prefectures</div>
+  <!-- Prefectures -->
+  <div class="filter-group">
 
-  <div id="pref-selected" class="filter-tags">
-    <!-- JSで動的に入る -->
+    <div class="filter-actions">
+      <select id="pref-add">
+        <option value="">Add prefecture</option>
+      </select>
+
+      <button id="pref-reset" type="button" class="link-button">
+        Reset to default
+      </button>
+    </div>
+
+    <div id="pref-selected" class="filter-tags">
+      <!-- Nationwide × Tokyo × -->
+    </div>
+
+    <!-- 既存ロジック用（非表示） -->
+    <div id="pref-dropdown" class="dropdown" style="display:none;">
+      <div id="dropdown-btn" class="dropdown-btn"></div>
+      <div id="dropdown-content" class="dropdown-content"></div>
+    </div>
+
   </div>
-
-  <div class="filter-actions">
-    <select id="pref-add">
-      <option value="">+ Add prefecture</option>
-    </select>
-
-    <button id="pref-reset" type="button" class="link-button">
-      Reset to default
-    </button>
-  </div>
-
-  <!-- 既存ロジックの“状態保存”として残す（非表示でOK） -->
-  <div id="pref-dropdown" class="dropdown" style="display:none;">
-    <div id="dropdown-btn" class="dropdown-btn"></div>
-    <div id="dropdown-content" class="dropdown-content"></div>
-  </div>
-</div>
-
 
   <!-- Diseases -->
   <div class="filter-group">
-    <div class="filter-label">Diseases shown below</div>
-
-    <div id="disease-selected" class="filter-tags">
-      <!-- JSで動的に入る -->
-    </div>
 
     <div class="filter-actions">
       <select id="disease-add">
-        <option value="">+ Add disease</option>
+        <option value="">Add disease</option>
       </select>
+
       <button id="disease-reset" type="button" class="link-button">
         Reset to default
       </button>
     </div>
+
+    <div id="disease-selected" class="filter-tags">
+      <!-- COVID-19 × Flu × RSV × ... -->
+    </div>
+
   </div>
 
 </section>
@@ -872,6 +872,7 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
 
 
 
