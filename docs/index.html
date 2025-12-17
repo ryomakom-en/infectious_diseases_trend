@@ -185,6 +185,10 @@
 
     // 現在表示しているカテゴリ
     let selectedCategories = new Set(defaultCategories);
+
+    // ★追加：表示順（先頭ほど上に表示）
+    let categoryDisplayOrder = allCategoryOrder.filter(d => selectedCategories.has(d));
+
     
     // ★プルダウン候補を外から更新するための関数参照（後で代入する）
     let refreshDiseaseOptions = () => {};
@@ -396,6 +400,7 @@ function setupResizeRedraw(){
       .text(d + " ×")
       .on("click", () => {
         selectedCategories.delete(d);
+        categoryDisplayOrder = categoryDisplayOrder.filter(x => x !== d);
         drawAllCharts(getSelectedDropdownPrefs());
         renderSelectedTags();
         refreshDiseaseOptions();
@@ -440,6 +445,9 @@ function initializeCategoryControls() {
 
     selectedCategories.add(val);
 
+    categoryDisplayOrder = categoryDisplayOrder.filter(x => x !== val);
+    categoryDisplayOrder.unshift(val);
+
     drawAllCharts(getSelectedDropdownPrefs());
     renderSelectedTags();
 
@@ -449,6 +457,8 @@ function initializeCategoryControls() {
 
   resetBtn.addEventListener("click", () => {
     selectedCategories = new Set(defaultCategories);
+
+    categoryDisplayOrder = allCategoryOrder.filter(d => selectedCategories.has(d));
 
     drawAllCharts(getSelectedDropdownPrefs());
     renderSelectedTags();
@@ -547,12 +557,25 @@ function initializePrefControls() {
       // 選択中カテゴリだけ
       catGroups = catGroups.filter(([cat]) => selectedCategories.has(cat));
 
-      // 並び順は allCategoryOrder に従う
-      catGroups.sort((a, b) => {
-        const indexA = allCategoryOrder.indexOf(a[0]);
-        const indexB = allCategoryOrder.indexOf(b[0]);
-        return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
-      });
+// ★並び順：最近追加したもの（categoryDisplayOrderの先頭）を上に
+catGroups.sort((a, b) => {
+  const aCat = a[0];
+  const bCat = b[0];
+
+  const ia = categoryDisplayOrder.indexOf(aCat);
+  const ib = categoryDisplayOrder.indexOf(bCat);
+
+  // どちらも displayOrder にあるなら、その順
+  if (ia !== -1 && ib !== -1) return ia - ib;
+
+  // 片方だけあるなら、それを優先
+  if (ia !== -1) return -1;
+  if (ib !== -1) return 1;
+
+  // どちらも無い（基本ないはずだが保険）：従来順
+  return allCategoryOrder.indexOf(aCat) - allCategoryOrder.indexOf(bCat);
+});
+
 
       catGroups.forEach(([cat, catData]) => {
         drawFocusContextChart(cat, catData);
@@ -906,6 +929,7 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
 
 
 
