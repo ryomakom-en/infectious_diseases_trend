@@ -9,7 +9,7 @@
   <script src="https://d3js.org/d3.v6.min.js"></script>
 
   <!-- 外部CSS -->
-  <link rel="stylesheet" href="style33.css" />
+  <link rel="stylesheet" href="style34.css" />
 
   <!-- d3-simple-slider（あなたのコードに合わせて残す） -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/d3-simple-slider/1.6.3/d3-simple-slider.css" />
@@ -32,19 +32,31 @@
     Compare regions and diseases
   </div>
 
-  <!-- Prefectures -->
-  <div class="filter-group">
-    <div class="filter-label">Prefectures</div>
+<!-- Prefectures -->
+<div class="filter-group">
+  <div class="filter-label">Prefectures</div>
 
-    <div id="pref-selected" class="filter-tags">
-      <!-- JSで動的に入る -->
-    </div>
-
-    <div id="pref-dropdown" class="dropdown">
-      <div id="dropdown-btn" class="dropdown-btn">+ Add prefecture</div>
-      <div id="dropdown-content" class="dropdown-content"></div>
-    </div>
+  <div id="pref-selected" class="filter-tags">
+    <!-- JSで動的に入る -->
   </div>
+
+  <div class="filter-actions">
+    <select id="pref-add">
+      <option value="">+ Add prefecture</option>
+    </select>
+
+    <button id="pref-reset" type="button" class="link-button">
+      Reset to default
+    </button>
+  </div>
+
+  <!-- 既存ロジックの“状態保存”として残す（非表示でOK） -->
+  <div id="pref-dropdown" class="dropdown" style="display:none;">
+    <div id="dropdown-btn" class="dropdown-btn"></div>
+    <div id="dropdown-content" class="dropdown-content"></div>
+  </div>
+</div>
+
 
   <!-- Diseases -->
   <div class="filter-group">
@@ -230,6 +242,7 @@
 
       initializeDropdown();
       initializeCategoryControls();
+      initializePrefControls();
 
       setDefaultDropdownSelection();   // ★あなたの元コードのまま（ここが重要）
       drawAllCharts(getSelectedDropdownPrefs());
@@ -422,6 +435,64 @@ function setupResizeRedraw(){
 
       refreshOptions();
     }
+    
+    function initializePrefControls(){
+  const select = document.getElementById("pref-add");
+  const resetBtn = document.getElementById("pref-reset");
+
+  function refreshOptions(){
+    select.innerHTML = '<option value="">+ Add prefecture</option>';
+
+    const selected = new Set(getSelectedDropdownPrefs());
+    prefectureOrder
+      .filter(p => !selected.has(p))
+      .forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p;
+        opt.textContent = p;
+        select.appendChild(opt);
+      });
+  }
+
+  select.addEventListener("change", () => {
+    const val = select.value;
+    if (!val) return;
+
+    // 既存の状態（.option.selected）をONにする
+    d3.selectAll("#dropdown-content .option")
+      .filter(function(){
+        return d3.select(this).attr("data-pref") === val;
+      })
+      .classed("selected", true);
+
+    updateDropdownBtn();                 // 既存関数（中の挙動は残してOK）
+    drawAllCharts(getSelectedDropdownPrefs());
+    renderSelectedTags();
+    refreshOptions();
+    select.value = "";
+  });
+
+  resetBtn.addEventListener("click", () => {
+    // いったん全解除
+    d3.selectAll("#dropdown-content .option").classed("selected", false);
+
+    // デフォルトだけON（あなたの既存ロジックと同じ）
+    d3.selectAll("#dropdown-content .option")
+      .filter(function(){
+        const p = d3.select(this).attr("data-pref");
+        return (p === "Nationwide" || p === "Tokyo" || p === "全国" || p === "東京都");
+      })
+      .classed("selected", true);
+
+    updateDropdownBtn();
+    drawAllCharts(getSelectedDropdownPrefs());
+    renderSelectedTags();
+    refreshOptions();
+  });
+
+  refreshOptions();
+}
+
 
     /***********************************************
      * 全カテゴリーのグラフ描画（選択中カテゴリのみ）
@@ -795,6 +866,7 @@ if (savedBrushExtents[category]) {
   </script>
 </body>
 </html>
+
 
 
 
